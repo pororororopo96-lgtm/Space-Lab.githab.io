@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPACE — Платформа для разработчиков</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="stylesheet" href="css/modals.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo__accent">SP</span>ACE
+            </div>
+            <nav class="nav">
+                <a href="#posts" class="nav__link">Записи</a>
+                <a href="#topics" class="nav__link">Темы</a>
+                <a href="#" class="nav__link" id="navAuthors">Авторы</a>
+                <a href="#" class="nav__link" id="navAbout">О проекте</a>
+            </nav>
+            <div class="header__actions">
+                <button class="icon-btn" id="searchBtn" aria-label="Поиск">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+                <!-- Блок управления пользователем -->
+                <div id="userArea" style="display: flex; align-items: center; gap: 10px;">
+                    <!-- Сюда JS вставит либо кнопку "Войти", либо имя юзера -->
+                </div>
+                <button class="burger" id="burger" aria-label="Меню">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero__bg"></div>
+            <div class="container">
+                <div class="hero__content">
+                    <span class="hero__tag">KNOWLEDGE BASE · 2026</span>
+                    <h1 class="hero__title">Делись знаниями,<br><span class="gold">расти вместе</span></h1>
+                    <p class="hero__subtitle">Платформа для разработчиков и IT-специалистов.</p>
+                    <div class="hero__buttons">
+                        <button class="btn btn--primary" id="heroCreateBtn">Создать запись</button>
+                        <a href="#posts" class="btn btn--ghost">Читать записи</a>
+                    </div>
+                    <div class="hero__stats">
+                        <div class="stat"><span class="stat__num" id="statPosts">0</span><span class="stat__label">записей</span></div>
+                        <div class="stat"><span class="stat__num" id="statLangs">0</span><span class="stat__label">языков</span></div>
+                        <div class="stat"><span class="stat__num" id="statTopics">0</span><span class="stat__label">категорий</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="topics" id="topics">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Темы</h2>
+                    <a href="#posts" class="section-link">СМОТРЕТЬ ВСЕ →</a>
+                </div>
+                <div class="topics__grid" id="topicsGrid"></div>
+            </div>
+        </section>
+
+        <section class="posts" id="posts">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Все записи</h2>
+                    <div class="posts__controls">
+                        <select class="filter-select" id="filterSelect">
+                            <option value="all">Все записи</option>
+                        </select>
+                        <select class="filter-select" id="sortSelect">
+                            <option value="new">Сначала новые</option>
+                            <option value="old">Сначала старые</option>
+                        </select>
+                        <button class="btn btn--primary" id="createBtn">+ Новая запись</button>
+                    </div>
+                </div>
+                <div class="posts__grid" id="postsGrid"></div>
+                <div class="posts__empty" id="postsEmpty" style="display: none;">
+                    <span>📝</span>
+                    <h3>Записей пока нет</h3>
+                    <p>Стань первым — создай свою первую запись</p>
+                    <button class="btn btn--primary" id="emptyCreateBtn">Создать запись</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grid">
+                <div class="footer__brand">
+                    <div class="logo"><span class="logo__accent">SP</span>ACE</div>
+                    <p>Платформа для обмена знаниями</p>
+                </div>
+                <div class="footer__col">
+                    <h4>Разделы</h4>
+                    <a href="#posts">Записи</a>
+                    <a href="#topics">Темы</a>
+                </div>
+                <div class="footer__col">
+                    <h4>Контакты</h4>
+                    <a href="#">Telegram</a>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <span>© 2026 SPACE.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно ВХОДА/РЕГИСТРАЦИИ -->
+    <div class="modal" id="authModal">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__window modal__window--create">
+            <div class="modal__header">
+                <h3>Вход в систему</h3>
+                <button class="modal__close" data-close>✕</button>
+            </div>
+            <div class="modal__body">
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="authUsername">Имя пользователя</label>
+                        <input type="text" id="authUsername" class="form-input" required placeholder="Придумайте никнейм">
+                    </div>
+                    <div class="form-group">
+                        <label for="authPassword">Пароль</label>
+                        <input type="password" id="authPassword" class="form-input" required placeholder="Любой пароль">
+                    </div>
+                    <div class="form-group" id="adminCodeGroup" style="display: none;">
+                        <label for="adminCodeInput">Код администратора</label>
+                        <input type="text" id="adminCodeInput" class="form-input" placeholder="Введите секретный код">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--ghost" id="toggleAdminModeBtn">Я админ</button>
+                        <button type="submit" class="btn btn--primary">Войти / Регистрация</button>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-dim); margin-top: 10px; text-align: center;">
+                        Если пользователя нет, он будет создан автоматически.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания записи -->
+    <div class="modal" id="createModal">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__window modal__window--create">
+            <div class="modal__header">
+                <h3>Новая запись</h3>
+                <button class="modal__close" data-close>✕</button>
+            </div>
+            <div class="modal__body">
+                <form id="createForm">
+                    <div class="form-group">
+                        <label for="postTitle">Заголовок</label>
+                        <input type="text" id="postTitle" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postExcerpt">Краткое описание</label>
+                        <input type="text" id="postExcerpt" class="form-input" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postTopic">Категория</label>
+                            <select id="postTopic" class="form-input" required>
+                                <option value="programming">💻 Программирование</option>
+                                <option value="networks">🌍 Компьютерные сети</option>
+                                <option value="blockchain">⛓️ Блокчейн</option>
+                                <option value="security">🛡️ Кибербезопасность</option>
+                                <option value="video_editing">🎬 Монтаж</option>
+                                <option value="modeling_3d">🎨 3D-моделирование</option>
+                                <option value="sysadmin">🖥️ Системное администрирование</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="postLangGroup">
+                            <label for="postLang">Язык / Технология</label>
+                            <select id="postLang" class="form-input">
+                                <option value="python">🐍 Python</option>
+                                <option value="sql">🗄️ SQL</option>
+                                <option value="csharp">⚡ C#</option>
+                                <option value="cpp">⚙️ C++</option>
+                                <option value="java">☕ Java</option>
+                                <option value="javascript">🟨 JavaScript</option>
+                                <option value="kotlin">🟪 Kotlin</option>
+                                <option value="go">🐹 GO</option>
+                                <option value="html">🌐 HTML</option>
+                                <option value="css">🎨 CSS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">Основной текст</label>
+                        <textarea id="postContent" class="form-input form-textarea" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Картинка (необязательно)</label>
+                        <div class="image-upload">
+                            <div class="image-upload__actions">
+                                <label class="btn btn--small image-upload__btn">
+                                    📁 Загрузить файл
+                                    <input type="file" id="postImageFile" accept="image/*" hidden>
+                                </label>
+                                <input type="url" id="postImageUrl" class="form-input" placeholder="Или URL картинки" style="flex: 1;">
+                                <button type="button" class="btn btn--small" id="clearImageBtn">✕ Убрать</button>
+                            </div>
+                            <div class="image-upload__preview" id="imagePreview">
+                                <span class="image-upload__placeholder">Превью появится здесь</span>
+                                <img src="" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="postCode">Код (необязательно)</label>
+                        <textarea id="postCode" class="form-input form-code"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--ghost" data-close>Отмена</button>
+                        <button type="submit" class="btn btn--primary">Опубликовать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно просмотра -->
+    <div class="modal" id="viewModal">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__window modal__window--view">
+            <div class="modal__header">
+                <h3>Запись</h3>
+                <button class="modal__close" data-close>✕</button>
+            </div>
+            <div class="view-body" id="viewBody"></div>
+        </div>
+    </div>
+
+    <!-- Поиск -->
+    <div class="modal" id="searchModal">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__window modal__window--search">
+            <div class="modal__header">
+                <h3>Поиск</h3>
+                <button class="modal__close" data-close>✕</button>
+            </div>
+            <div class="modal__body">
+                <input type="text" id="searchInput" class="search-input" placeholder="Введите запрос...">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скоро -->
+    <div class="modal" id="comingSoonModal">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__window modal__window--soon">
+            <div class="modal__header"><h3>🚧</h3><button class="modal__close" data-close>✕</button></div>
+            <div class="soon-body">
+                <span class="soon-icon">🚧</span>
+                <h3 class="soon-title">Раздел в разработке</h3>
+                <button class="btn btn--primary" data-close>Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- О проекте -->
+    <div class="modal" id="aboutModal">
+        <div class="modal__overlay" data-close></div>
+        <div class="modal__window modal__window--about">
+            <div class="modal__header"><h3>💡 О проекте</h3><button class="modal__close" data-close>✕</button></div>
+            <div class="about-body">
+                <span class="about-icon">💡</span>
+                <h3 class="about-title">SPACE</h3>
+                <div class="about-text">
+                    <p>Образовательная платформа для обмена знаниями.</p>
+                </div>
+                <button class="btn btn--primary" data-close>Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Мобильное меню -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu__close" id="mobileMenuClose">✕</button>
+        <nav class="mobile-menu__nav">
+            <a href="#posts">Записи</a>
+            <a href="#topics">Темы</a>
+        </nav>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+<!--<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPACE — Сборник знаний разработчика</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="modals.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <a href="#" class="logo">SP<span class="logo__accent">A</span>CE</a>
+        <nav class="nav">
+            <a href="#posts" class="nav__link">Записи</a>
+            <a href="#topics" class="nav__link">Темы</a>
+            <a href="#" class="nav__link">Авторы</a>
+            <a href="#" class="nav__link">О проекте</a>
+        </nav>
+        <div class="header__actions">
+            <button class="icon-btn" id="searchBtn" title="Поиск">🔍</button>
+            <button class="btn btn--primary btn--header" id="createBtn">+ Новая запись</button>
+            <button class="burger" id="burger" aria-label="Меню">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero__bg"></div>
+    <div class="container">
+        <div class="hero__content">
+            <span class="hero__tag">KNOWLEDGE BASE · 2026</span>
+            <h1 class="hero__title">Делись знаниями,<br>расти <span class="gold">вместе</span></h1>
+            <p class="hero__subtitle">
+                Платформа для разработчиков и IT-специалистов: публикуй свои заметки,
+                сниппеты кода, разборы технологий. Программирование, сети, блокчейн,
+                кибербезопасность, монтаж, 3D-моделирование и системное администрирование.
+            </p>
+            <div class="hero__buttons">
+                <button class="btn btn--primary" id="heroCreateBtn">Создать запись</button>
+                <a href="#posts" class="btn btn--ghost">Читать записи</a>
+            </div>
+            <div class="hero__stats">
+                <div class="stat">
+                    <span class="stat__num" id="statPosts">0</span>
+                    <span class="stat__label">записей</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__num" id="statLangs">0</span>
+                    <span class="stat__label">языков</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__num" id="statTopics">0</span>
+                    <span class="stat__label">категорий</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TOPICS --
+<section class="topics" id="topics">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Темы</h2>
+            <a href="#posts" class="section-link">СМОТРЕТЬ ВСЕ →</a>
+        </div>
+        <div class="topics__grid" id="topicsGrid">
+        </div>
+    </div>
+</section>
+
+<section class="posts" id="posts">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Все записи</h2>
+            <div class="posts__controls">
+                <select class="filter-select" id="filterSelect">
+                    <option value="all">Все записи</option>
+                </select>
+                <select class="filter-select" id="sortSelect">
+                    <option value="new">Сначала новые</option>
+                    <option value="old">Сначала старые</option>
+                </select>
+            </div>
+        </div>
+        <div class="posts__grid" id="postsGrid"></div>
+        <div class="posts__empty" id="postsEmpty" style="display:none;">
+            <span>📝</span>
+            <h3>Записей пока нет</h3>
+            <p>Стань первым — создай свою первую запись и поделись знаниями</p>
+            <button class="btn btn--primary" id="emptyCreateBtn">Создать запись</button>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer__grid">
+            <div class="footer__brand">
+                <a href="#" class="logo">SP<span class="logo__accent">A</span>CE</a>
+                <p>Платформа для обмена знаниями между разработчиками и IT-специалистами</p>
+            </div>
+            <div class="footer__col">
+                <h4>Разделы</h4>
+                <a href="#posts">Записи</a>
+                <a href="#topics">Темы</a>
+                <a href="#">Авторы</a>
+            </div>
+            <div class="footer__col">
+                <h4>Категории</h4>
+                <a href="#">Программирование</a>
+                <a href="#">Компьютерные сети</a>
+                <a href="#">Блокчейн</a>
+                <a href="#">Кибербезопасность</a>
+                <a href="#">Системное администрирование</a>
+            </div>
+            <div class="footer__col">
+                <h4>Контакты</h4>
+                <a href="mailto:hello@devspace.io">hello@devspace.io</a>
+                <a href="#">Telegram</a>
+                <a href="#">GitHub</a>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <span>© 2026 SPACE. Все права защищены.</span>
+            <span>Сделано с ♥ для разработчиков</span>
+        </div>
+    </div>
+</footer>
+
+<!-- ============ МОДАЛКИ ============ --
+
+<div class="modal" id="createModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__window modal__window--create">
+        <div class="modal__header">
+            <h3>Новая запись</h3>
+            <button class="modal__close" data-close>✕</button>
+        </div>
+        <form class="modal__body" id="createForm">
+            <div class="form-group">
+                <label>Заголовок</label>
+                <input type="text" class="form-input" id="postTitle" required maxlength="120">
+            </div>
+            <div class="form-group">
+                <label>Краткое описание</label>
+                <input type="text" class="form-input" id="postExcerpt" required maxlength="200">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select class="form-input" id="postTopic" required>
+                        <option value="programming">💻 Программирование</option>
+                        <option value="networks">🌍 Компьютерные сети</option>
+                        <option value="blockchain">⛓️ Блокчейн</option>
+                        <option value="security">🛡️ Кибербезопасность</option>
+                        <option value="video_editing">🎬 Монтаж</option>
+                        <option value="modeling_3d">🎨 3D-моделирование</option>
+                        <option value="sysadmin">🖥️ Системное администрирование</option>
+                    </select>
+                </div>
+                <div class="form-group" id="postLangGroup" style="display:none;">
+                    <label>Язык / Технология</label>
+                    <select class="form-input" id="postLang">
+                        <option value="python">🐍 Python</option>
+                        <option value="sql">🗄️ SQL</option>
+                        <option value="csharp">⚡ C#</option>
+                        <option value="cpp">⚙️ C++</option>
+                        <option value="java">☕ Java</option>
+                        <option value="javascript">🟨 JavaScript</option>
+                        <option value="kotlin">🟪 Kotlin</option>
+                        <option value="go">🐹 GO</option>
+                        <option value="html">🌐 HTML</option>
+                        <option value="css">🎨 CSS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Основной текст</label>
+                <textarea class="form-input form-textarea" id="postContent" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Картинка (необязательно)</label>
+                <div class="image-upload">
+                    <div class="image-upload__actions">
+                        <label class="btn btn--small image-upload__btn">
+                            📁 Загрузить файл
+                            <input type="file" id="postImageFile" accept="image/*" hidden>
+                        </label>
+                        <button type="button" class="btn btn--small" id="clearImageBtn">✕ Убрать</button>
+                    </div>
+                    <input type="url" class="form-input" id="postImageUrl" placeholder="или вставьте ссылку на изображение">
+                    <div class="image-upload__preview" id="imagePreview">
+                        <span class="image-upload__placeholder">Превью появится здесь</span>
+                        <img alt="preview">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Код (необязательно)</label>
+                <textarea class="form-input form-code" id="postCode" rows="8" spellcheck="false"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Имя автора</label>
+                <input type="text" class="form-input" id="postAuthor" required maxlength="40">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn--ghost" data-close>Отмена</button>
+                <button type="submit" class="btn btn--primary">Опубликовать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="viewModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__window modal__window--view">
+        <div class="modal__header">
+            <h3>Запись</h3>
+            <button class="modal__close" data-close>✕</button>
+        </div>
+        <div class="view-body" id="viewBody"></div>
+    </div>
+</div>
+
+<div class="modal" id="searchModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__window modal__window--search">
+        <div class="modal__header">
+            <h3>Поиск по записям</h3>
+            <button class="modal__close" data-close>✕</button>
+        </div>
+        <div class="modal__body">
+            <input type="text" class="search-input" id="searchInput" placeholder="Введите запрос...">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="comingSoonModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__window modal__window--soon">
+        <div class="modal__header">
+            <h3>&nbsp;</h3>
+            <button class="modal__close" data-close>✕</button>
+        </div>
+        <div class="soon-body">
+            <span class="soon-icon">🚧</span>
+            <h3 class="soon-title">Раздел в разработке</h3>
+            <p class="soon-text">Совсем скоро информация будет обновлена</p>
+            <p class="soon-sub">Мы работаем над страницей авторов. Загляните позже — здесь появятся профили разработчиков, делящихся знаниями.</p>
+            <button class="btn btn--primary" data-close>Понятно</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="aboutModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__window modal__window--about">
+        <div class="modal__header">
+            <h3>💡 О проекте</h3>
+            <button class="modal__close" data-close>✕</button>
+        </div>
+        <div class="about-body">
+            <span class="about-icon">💡</span>
+            <h3 class="about-title">SPACE</h3>
+            <div class="about-text">
+                <p><strong>SPACE</strong> — образовательная платформа, созданная исключительно в целях изучения программирования и современных IT-технологий.</p>
+                <p>Этот сайт написан как для начинающих, так и для опытных специалистов, которые могут делиться опытом и обмениваться знаниями. Каждый может опубликовать свою заметку, показать решение задачи или рассказать о технологии.</p>
+                <p>Программирование на 10 языках, компьютерные сети, блокчейн, кибербезопасность, монтаж видео, 3D-моделирование и системное администрирование — самые разные темы, актуальные в современном мире.</p>
+                <p>Сайт находится в демо-версии и будет постоянно улучшаться! По всем вопросам можно обратиться в <a href="#" style="color:var(--accent);">Telegram</a>.</p>
+            </div>
+            <button class="btn btn--primary" data-close>Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu__close" id="mobileMenuClose">✕</button>
+    <nav class="mobile-menu__nav">
+        <a href="#posts">Записи</a>
+        <a href="#topics">Темы</a>
+        <a href="#">Авторы</a>
+        <a href="#">О проекте</a>
+    </nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
